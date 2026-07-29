@@ -1,0 +1,16 @@
+{
+  "name": "恋恋开心学习养成岛",
+  "short_name": "恋恋学习岛",
+  "description": "卡通风格幼小衔接亲子学习系统",
+  "lang": "zh-CN",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#fff3c4",
+  "theme_color": "#ffd24c",
+  "icons": [
+    { "src": "app-icon.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any" },
+    { "src": "app-icon.png", "sizes": "1024x1024", "type": "image/png", "purpose": "maskable" }
+  ]
+}
