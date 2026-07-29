@@ -12,7 +12,7 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="恋恋学习岛" />
-  <link rel="stylesheet" href="style.css?v=20260729" />
+  <link rel="stylesheet" href="style.css?v=20260729b" />
 </head>
 <body>
   <div class="app">
@@ -29,7 +29,9 @@
         <button class="nav-item" data-page="math"><span class="nav-icon">➕</span>数学</button>
         <button class="nav-item" data-page="poem"><span class="nav-icon">📜</span>古诗</button>
         <button class="nav-item" data-page="read"><span class="nav-icon">📚</span>阅读</button>
+        <button class="nav-item" data-page="song"><span class="nav-icon">🎵</span>儿歌角</button>
         <button class="nav-item" data-page="think"><span class="nav-icon">🧩</span>思维</button>
+        <button class="nav-item" data-page="settings"><span class="nav-icon">⚙️</span>设置</button>
         <button class="nav-item" data-page="other"><span class="nav-icon">🌈</span>其他</button>
       </nav>
       <div class="sidebar-footer">
@@ -43,7 +45,7 @@
         <div class="topbar-title" id="pageTitle">首页</div>
         <div class="topbar-user">
           <span class="user-name">👧 开心宝贝</span>
-          <span class="user-star">⭐ 12 颗星</span>
+          <span class="user-star">⭐ <span id="starCount">12</span> 颗星</span>
         </div>
       </header>
 
@@ -52,18 +54,18 @@
         <div class="hero">
           <div class="hero-text">
             <h1>欢迎来到开心学习养成岛！🌟</h1>
-            <p>在这里，我们一起开心地认字、学英语、做数学、读古诗，慢慢长大～</p>
-            <button class="btn-primary">开始今天的学习 ▶</button>
+            <p>点一点，听一听，和小岛精灵一起认字、数数、唱儿歌，慢慢长大～</p>
+            <button class="btn-primary" data-jump="shizi">开始今天的学习 ▶</button>
           </div>
           <div class="hero-emoji">🌴🐰🎈</div>
         </div>
         <div class="card-grid">
-          <div class="card" data-jump="shizi"><div class="card-icon">🔤</div><h3>识字乐园</h3><p>认识更多汉字朋友</p></div>
-          <div class="card" data-jump="english"><div class="card-icon">🔤</div><h3>英语小屋</h3><p>说说好玩的单词</p></div>
+          <div class="card" data-jump="shizi"><div class="card-icon">🔤</div><h3>识字乐园</h3><p>点一点，听读音</p></div>
+          <div class="card" data-jump="english"><div class="card-icon">🔤</div><h3>英语小屋</h3><p>说说好玩单词</p></div>
           <div class="card" data-jump="math"><div class="card-icon">➕</div><h3>数学城堡</h3><p>数数算算真有趣</p></div>
-          <div class="card" data-jump="poem"><div class="card-icon">📜</div><h3>古诗花园</h3><p>读读美美的诗句</p></div>
+          <div class="card" data-jump="song"><div class="card-icon">🎵</div><h3>儿歌角</h3><p>一起唱儿歌</p></div>
+          <div class="card" data-jump="poem"><div class="card-icon">📜</div><h3>古诗花园</h3><p>读读美美诗句</p></div>
           <div class="card" data-jump="read"><div class="card-icon">📚</div><h3>阅读小船</h3><p>听故事看绘本</p></div>
-          <div class="card" data-jump="think"><div class="card-icon">🧩</div><h3>思维乐园</h3><p>动脑筋玩游戏</p></div>
         </div>
         <div class="progress-box">
           <h3>🌟 今日学习进度</h3>
@@ -75,22 +77,30 @@
       <!-- 识字 -->
       <section class="page" id="page-shizi">
         <h2 class="section-title">🔤 识字乐园</h2>
-        <p class="section-desc">点一点卡片，看看它们怎么读～</p>
+        <p class="section-desc">点一点卡片，听听它怎么读～</p>
+        <div class="tabs" id="shiziTabs"></div>
         <div class="flash-grid" id="shiziGrid"></div>
+        <button class="btn-soft" id="shiziReadAll">🔊 全部读一遍</button>
       </section>
 
       <!-- 英语 -->
       <section class="page" id="page-english">
         <h2 class="section-title">🔤 英语小屋</h2>
-        <p class="section-desc">跟着小熊一起说英语吧！</p>
+        <p class="section-desc">跟着小熊一起说英语吧！点卡片听发音。</p>
         <div class="flash-grid" id="englishGrid"></div>
       </section>
 
       <!-- 数学 -->
       <section class="page" id="page-math">
         <h2 class="section-title">➕ 数学城堡</h2>
-        <p class="section-desc">做做小题目，越算越聪明！</p>
+        <p class="section-desc">先数一数，再做做小题目，越算越聪明！</p>
         <div class="quiz-box">
+          <h3 style="color:var(--mint);margin-bottom:12px;">🍎 数一数</h3>
+          <div class="count-show" id="countShow"></div>
+          <div class="count-opts" id="countOpts"></div>
+          <div class="quiz-feedback" id="countFeedback"></div>
+        </div>
+        <div class="quiz-box" style="margin-top:18px;">
           <div class="quiz-q" id="mathQ">3 + 2 = ?</div>
           <div class="quiz-options" id="mathOptions"></div>
           <div class="quiz-feedback" id="mathFeedback"></div>
@@ -113,8 +123,20 @@
           <div class="book-info">
             <h3>《小熊找朋友》</h3>
             <p>小熊走呀走，遇见了小兔、小鸟和小鹿，大家一起做游戏，开心极了！</p>
-            <button class="btn-primary">▶ 听故事</button>
+            <button class="btn-primary" id="readStory">▶ 听故事</button>
           </div>
+        </div>
+      </section>
+
+      <!-- 儿歌角 -->
+      <section class="page" id="page-song">
+        <h2 class="section-title">🎵 儿歌角</h2>
+        <p class="section-desc">点一首儿歌，跟着唱一唱吧！</p>
+        <div class="song-list" id="songList"></div>
+        <div class="song-detail" id="songDetail" style="display:none;">
+          <h3 id="songTitle"></h3>
+          <p id="songLyrics"></p>
+          <button class="btn-primary" id="songPlay">🔊 读一读</button>
         </div>
       </section>
 
@@ -134,20 +156,84 @@
         </div>
       </section>
 
+      <!-- 设置 -->
+      <section class="page" id="page-settings">
+        <h2 class="section-title">⚙️ 设置</h2>
+        <p class="section-desc">爸爸妈妈可以帮小朋友调一调～</p>
+        <div class="set-list">
+          <div class="set-row">
+            <span>🔠 字体大小</span>
+            <div class="set-btns" id="fontBtns">
+              <button data-fs="0.85">小</button>
+              <button data-fs="1" class="on">中</button>
+              <button data-fs="1.2">大</button>
+            </div>
+          </div>
+          <div class="set-row">
+            <span>🔊 点读发音</span>
+            <div class="set-btns" id="ttsBtns">
+              <button data-v="on" class="on">开</button>
+              <button data-v="off">关</button>
+            </div>
+          </div>
+          <div class="set-row">
+            <span>🎶 儿歌自动朗读</span>
+            <div class="set-btns" id="autoBtns">
+              <button data-v="on" class="on">开</button>
+              <button data-v="off">关</button>
+            </div>
+          </div>
+          <div class="set-row">
+            <span>🎵 点击音效</span>
+            <div class="set-btns" id="soundBtns">
+              <button data-v="on" class="on">开</button>
+              <button data-v="off">关</button>
+            </div>
+          </div>
+          <div class="set-row">
+            <span>⭐ 我的星星</span>
+            <button class="btn-soft" id="resetStars">重置为 0</button>
+          </div>
+        </div>
+      </section>
+
       <!-- 其他 -->
       <section class="page" id="page-other">
         <h2 class="section-title">🌈 其他</h2>
         <p class="section-desc">更多有趣的小功能～</p>
         <div class="card-grid">
-          <div class="card"><div class="card-icon">🎨</div><h3>画画板</h3><p>画出你的小世界</p></div>
-          <div class="card"><div class="card-icon">🎵</div><h3>儿歌角</h3><p>唱唱跳跳真快乐</p></div>
-          <div class="card"><div class="card-icon">⚙️</div><h3>设置</h3><p>调整学习偏好</p></div>
-          <div class="card"><div class="card-icon">👨‍👩‍👧</div><h3>家长中心</h3><p>查看成长记录</p></div>
+          <div class="card" data-jump="draw"><div class="card-icon">🎨</div><h3>涂鸦板</h3><p>用手指画画</p></div>
+          <div class="card" data-jump="task"><div class="card-icon">✅</div><h3>亲子小任务</h3><p>和爸爸妈妈完成</p></div>
+          <div class="card" data-jump="song"><div class="card-icon">🎵</div><h3>儿歌角</h3><p>唱唱跳跳真快乐</p></div>
+          <div class="card" data-jump="settings"><div class="card-icon">⚙️</div><h3>设置</h3><p>调整学习偏好</p></div>
         </div>
+      </section>
+
+      <!-- 涂鸦板（从“其他”进入） -->
+      <section class="page" id="page-draw">
+        <h2 class="section-title">🎨 涂鸦板</h2>
+        <p class="section-desc">用手指在下面画画吧！</p>
+        <div class="paint-tools">
+          <button class="swatch on" style="background:#ff7a7a" data-c="#ff7a7a"></button>
+          <button class="swatch" style="background:#ffd24c" data-c="#ffd24c"></button>
+          <button class="swatch" style="background:#7fce9b" data-c="#7fce9b"></button>
+          <button class="swatch" style="background:#5aa9e6" data-c="#5aa9e6"></button>
+          <button class="swatch" style="background:#9b6bff" data-c="#9b6bff"></button>
+          <button class="swatch" style="background:#333" data-c="#333"></button>
+          <button class="btn-soft" id="paintClear">🧽 清空</button>
+        </div>
+        <canvas id="paint" class="paint-canvas"></canvas>
+      </section>
+
+      <!-- 亲子小任务（从“其他”进入） -->
+      <section class="page" id="page-task">
+        <h2 class="section-title">✅ 亲子小任务</h2>
+        <p class="section-desc">和爸爸妈妈一起完成，点亮小星星⭐</p>
+        <div class="task-list" id="taskList"></div>
       </section>
     </main>
   </div>
 
-  <script src="script.js?v=20260729"></script>
+  <script src="script.js?v=20260729b"></script>
 </body>
 </html>
