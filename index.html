@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>恋恋开心学习养成岛</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- 左侧固定导航栏 -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo">🏝️</div>
+        <div class="brand-title">恋恋开心<br /><span>学习养成岛</span></div>
+      </div>
+      <nav class="nav">
+        <button class="nav-item active" data-page="home"><span class="nav-icon">🏠</span>首页</button>
+        <button class="nav-item" data-page="shizi"><span class="nav-icon">🔤</span>识字</button>
+        <button class="nav-item" data-page="english"><span class="nav-icon">🔤</span>英语</button>
+        <button class="nav-item" data-page="math"><span class="nav-icon">➕</span>数学</button>
+        <button class="nav-item" data-page="poem"><span class="nav-icon">📜</span>古诗</button>
+        <button class="nav-item" data-page="read"><span class="nav-icon">📚</span>阅读</button>
+        <button class="nav-item" data-page="think"><span class="nav-icon">🧩</span>思维</button>
+        <button class="nav-item" data-page="other"><span class="nav-icon">🌈</span>其他</button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="mascot">🐤 小岛精灵陪你学习</div>
+      </div>
+    </aside>
+
+    <!-- 右侧主内容区 -->
+    <main class="content">
+      <header class="topbar">
+        <div class="topbar-title" id="pageTitle">首页</div>
+        <div class="topbar-user">
+          <span class="user-name">👧 开心宝贝</span>
+          <span class="user-star">⭐ 12 颗星</span>
+        </div>
+      </header>
+
+      <!-- 首页 -->
+      <section class="page active" id="page-home">
+        <div class="hero">
+          <div class="hero-text">
+            <h1>欢迎来到开心学习养成岛！🌟</h1>
+            <p>在这里，我们一起开心地认字、学英语、做数学、读古诗，慢慢长大～</p>
+            <button class="btn-primary">开始今天的学习 ▶</button>
+          </div>
+          <div class="hero-emoji">🌴🐰🎈</div>
+        </div>
+        <div class="card-grid">
+          <div class="card" data-jump="shizi"><div class="card-icon">🔤</div><h3>识字乐园</h3><p>认识更多汉字朋友</p></div>
+          <div class="card" data-jump="english"><div class="card-icon">🔤</div><h3>英语小屋</h3><p>说说好玩的单词</p></div>
+          <div class="card" data-jump="math"><div class="card-icon">➕</div><h3>数学城堡</h3><p>数数算算真有趣</p></div>
+          <div class="card" data-jump="poem"><div class="card-icon">📜</div><h3>古诗花园</h3><p>读读美美的诗句</p></div>
+          <div class="card" data-jump="read"><div class="card-icon">📚</div><h3>阅读小船</h3><p>听故事看绘本</p></div>
+          <div class="card" data-jump="think"><div class="card-icon">🧩</div><h3>思维乐园</h3><p>动脑筋玩游戏</p></div>
+        </div>
+        <div class="progress-box">
+          <h3>🌟 今日学习进度</h3>
+          <div class="progress-bar"><span style="width:60%"></span></div>
+          <p>已经完成 6 个学习任务，真棒！</p>
+        </div>
+      </section>
+
+      <!-- 识字 -->
+      <section class="page" id="page-shizi">
+        <h2 class="section-title">🔤 识字乐园</h2>
+        <p class="section-desc">点一点卡片，看看它们怎么读～</p>
+        <div class="flash-grid" id="shiziGrid"></div>
+      </section>
+
+      <!-- 英语 -->
+      <section class="page" id="page-english">
+        <h2 class="section-title">🔤 英语小屋</h2>
+        <p class="section-desc">跟着小熊一起说英语吧！</p>
+        <div class="flash-grid" id="englishGrid"></div>
+      </section>
+
+      <!-- 数学 -->
+      <section class="page" id="page-math">
+        <h2 class="section-title">➕ 数学城堡</h2>
+        <p class="section-desc">做做小题目，越算越聪明！</p>
+        <div class="quiz-box">
+          <div class="quiz-q" id="mathQ">3 + 2 = ?</div>
+          <div class="quiz-options" id="mathOptions"></div>
+          <div class="quiz-feedback" id="mathFeedback"></div>
+        </div>
+      </section>
+
+      <!-- 古诗 -->
+      <section class="page" id="page-poem">
+        <h2 class="section-title">📜 古诗花园</h2>
+        <p class="section-desc">读一读，感受诗意之美～</p>
+        <div class="poem-list" id="poemList"></div>
+      </section>
+
+      <!-- 阅读 -->
+      <section class="page" id="page-read">
+        <h2 class="section-title">📚 阅读小船</h2>
+        <p class="section-desc">坐上小船，听一个好听的绘本故事。</p>
+        <div class="book-card">
+          <div class="book-cover">🐻</div>
+          <div class="book-info">
+            <h3>《小熊找朋友》</h3>
+            <p>小熊走呀走，遇见了小兔、小鸟和小鹿，大家一起做游戏，开心极了！</p>
+            <button class="btn-primary">▶ 听故事</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 思维 -->
+      <section class="page" id="page-think">
+        <h2 class="section-title">🧩 思维乐园</h2>
+        <p class="section-desc">动动小脑筋，找出不一样的那一个！</p>
+        <div class="quiz-box">
+          <div class="quiz-q">下面哪个不是水果？</div>
+          <div class="quiz-options">
+            <button class="opt" data-correct="false">🍎 苹果</button>
+            <button class="opt" data-correct="false">🍌 香蕉</button>
+            <button class="opt" data-correct="true">🚗 小汽车</button>
+            <button class="opt" data-correct="false">🍓 草莓</button>
+          </div>
+          <div class="quiz-feedback" id="thinkFeedback"></div>
+        </div>
+      </section>
+
+      <!-- 其他 -->
+      <section class="page" id="page-other">
+        <h2 class="section-title">🌈 其他</h2>
+        <p class="section-desc">更多有趣的小功能～</p>
+        <div class="card-grid">
+          <div class="card"><div class="card-icon">🎨</div><h3>画画板</h3><p>画出你的小世界</p></div>
+          <div class="card"><div class="card-icon">🎵</div><h3>儿歌角</h3><p>唱唱跳跳真快乐</p></div>
+          <div class="card"><div class="card-icon">⚙️</div><h3>设置</h3><p>调整学习偏好</p></div>
+          <div class="card"><div class="card-icon">👨‍👩‍👧</div><h3>家长中心</h3><p>查看成长记录</p></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
