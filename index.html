@@ -12,7 +12,7 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="恋恋学习岛" />
-  <link rel="stylesheet" href="style.css?v=20260729b" />
+  <link rel="stylesheet" href="style.css?v=20260729e" />
 </head>
 <body>
   <div class="app">
@@ -110,8 +110,10 @@
       <!-- 古诗 -->
       <section class="page" id="page-poem">
         <h2 class="section-title">📜 古诗花园</h2>
-        <p class="section-desc">读一读，感受诗意之美～</p>
+        <p class="section-desc">收录《唐诗三百首》等 369 首经典古诗，点一点就能读～</p>
+        <div class="tabs" id="poemTabs"></div>
         <div class="poem-list" id="poemList"></div>
+        <div class="poem-more-wrap"><button class="btn-more" id="poemMore">🌸 再看更多</button></div>
       </section>
 
       <!-- 阅读 -->
@@ -234,6 +236,7 @@
     </main>
   </div>
 
-  <script src="script.js?v=20260729b"></script>
+  <script src="poems-data.js?v=20260729e"></script>
+  <script src="script.js?v=20260729e"></script>
 </body>
 </html>

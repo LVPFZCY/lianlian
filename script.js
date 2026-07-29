@@ -41,25 +41,43 @@ function beep() {
     o.start(); o.stop(audioCtx.currentTime + 0.12);
   } catch (e) {}
 }
-function speak(text, lang) {
-  if (!ttsEnabled) return;
+/* 在线 TTS（tts.wangwangit.com · 微软 Edge 神经语音，音质更自然） */
+const TTS_API = 'https://tts.wangwangit.com/v1/audio/speech';
+function voiceForLang(lang) { return lang === 'en-US' ? 'en-US-JennyNeural' : 'zh-CN-XiaoxiaoNeural'; }
+let onlineAudio = null;
+function fetchTTS(text, lang) {
+  return fetch(TTS_API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ input: text, voice: voiceForLang(lang), speed: 0.8, pitch: '0', style: 'general', volume: '0' })
+  }).then(r => { if (!r.ok) throw new Error('TTS ' + r.status); return r.blob(); });
+}
+function speakFallback(text, lang) {
   if (!('speechSynthesis' in window)) return;
   const u = new SpeechSynthesisUtterance(text);
   u.lang = lang || 'zh-CN'; u.rate = 0.85; u.pitch = 1.1;
   window.speechSynthesis.cancel();
   window.speechSynthesis.speak(u);
 }
+function speak(text, lang) {
+  if (!ttsEnabled || !text) return;
+  fetchTTS(text, lang).then(blob => {
+    if (onlineAudio) { try { onlineAudio.pause(); } catch (e) {} }
+    onlineAudio = new Audio(URL.createObjectURL(blob));
+    onlineAudio.play().catch(() => speakFallback(text, lang));
+  }).catch(() => speakFallback(text, lang));
+}
 function speakQueue(list, lang) {
-  if (!ttsEnabled || !list.length || !('speechSynthesis' in window)) return;
+  if (!ttsEnabled || !list.length) return;
   let i = 0;
-  function next() {
+  (function next() {
     if (i >= list.length) return;
-    const u = new SpeechSynthesisUtterance(list[i]);
-    u.lang = lang || 'zh-CN'; u.rate = 0.85; u.pitch = 1.1;
-    u.onend = () => { i++; next(); };
-    window.speechSynthesis.speak(u);
-  }
-  next();
+    fetchTTS(list[i], lang).then(blob => {
+      const a = new Audio(URL.createObjectURL(blob));
+      a.onended = () => { i++; next(); };
+      a.play().catch(() => { i++; next(); });
+    }).catch(() => { i++; next(); });
+  })();
 }
 
 /* ---------- 页面切换 ---------- */
@@ -168,22 +186,47 @@ function renderMath() {
   });
 }
 
-/* ---------- 古诗 ---------- */
-const poemData = [
-  { t: '静夜思', a: '唐 · 李白', p: '床前明月光，疑是地上霜。举头望明月，低头思故乡。' },
-  { t: '春晓', a: '唐 · 孟浩然', p: '春眠不觉晓，处处闻啼鸟。夜来风雨声，花落知多少。' },
-  { t: '咏鹅', a: '唐 · 骆宾王', p: '鹅鹅鹅，曲项向天歌。白毛浮绿水，红掌拨清波。' }
-];
+/* ---------- 古诗（数据来自 chinese-poetry 唐诗三百首，见 poems-data.js） ---------- */
+const POEM_CATS = ['启蒙精选', '五言绝句', '七言绝句', '五言律诗', '七言律诗', '全部'];
+const POEM_PAGE = 12;
+let poemCat = '启蒙精选';
+let poemShown = POEM_PAGE;
+function poemsOfCat() {
+  const all = (typeof POEMS !== 'undefined') ? POEMS : [];
+  if (poemCat === '启蒙精选') return all.filter(p => p.s);
+  if (poemCat === '全部') return all;
+  return all.filter(p => p.c === poemCat);
+}
+function renderPoemTabs() {
+  const wrap = document.getElementById('poemTabs');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  POEM_CATS.forEach(cat => {
+    const b = document.createElement('button');
+    b.className = 'tab' + (cat === poemCat ? ' on' : '');
+    b.textContent = cat;
+    b.onclick = () => { poemCat = cat; poemShown = POEM_PAGE; renderPoemTabs(); renderPoems(); beep(); };
+    wrap.appendChild(b);
+  });
+}
 function renderPoems() {
   const wrap = document.getElementById('poemList');
+  if (!wrap) return;
   wrap.innerHTML = '';
-  poemData.forEach(po => {
+  const list = poemsOfCat();
+  list.slice(0, poemShown).forEach(po => {
     const d = document.createElement('div');
     d.className = 'poem';
-    d.innerHTML = `<h3>${po.t}</h3><div class="author">${po.a}</div><p>${po.p}</p>`;
-    d.onclick = () => speak(po.t + '。' + po.p);
+    const lines = po.p.map(l => `<p>${l}</p>`).join('');
+    d.innerHTML = `<h3>${po.t} <span class="poem-read">🔊</span></h3><div class="author">${po.a}</div>${lines}`;
+    d.onclick = () => speak(po.t + '。' + po.p.join(''));
     wrap.appendChild(d);
   });
+  const more = document.getElementById('poemMore');
+  if (more) {
+    more.style.display = poemShown < list.length ? '' : 'none';
+    more.onclick = () => { poemShown += POEM_PAGE; renderPoems(); beep(); };
+  }
 }
 
 /* ---------- 阅读 ---------- */
@@ -304,6 +347,6 @@ renderStars();
 renderShiziTabs(); renderShiziGrid();
 renderEnglish();
 renderCount(); renderMath();
-renderPoems();
+renderPoemTabs(); renderPoems();
 renderSongs();
 renderTasks();

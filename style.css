@@ -192,6 +192,15 @@ body {
   border-left: 8px solid var(--green-deep);
 }
 .poem h3 { font-size: calc(20px * var(--ts)); color: var(--mint); margin-bottom: 6px; }
+.poem h3 .poem-read { font-size: calc(15px * var(--ts)); opacity: .75; }
+.poem-more-wrap { text-align: center; margin-top: 18px; }
+.btn-more {
+  border: 2px solid var(--green-deep); background: #fff; color: var(--green-deep);
+  font-size: calc(16px * var(--ts)); font-weight: 700; padding: 12px 28px;
+  border-radius: 999px; cursor: pointer; min-height: 48px;
+  transition: all .15s ease;
+}
+.btn-more:hover { background: var(--green-deep); color: #fff; }
 .poem .author { font-size: calc(13px * var(--ts)); color: var(--ink-soft); margin-bottom: 10px; }
 .poem p { font-size: calc(16px * var(--ts)); line-height: 1.9; color: var(--ink); }
 
