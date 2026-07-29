@@ -2,14 +2,14 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --yellow: #ffd24c;
-  --yellow-soft: #fff3c4;
-  --yellow-deep: #f5b800;
-  --orange: #ff9a3c;
-  --cream: #fffdf5;
-  --ink: #5a4a2a;
-  --ink-soft: #8a7a55;
-  --shadow: 0 8px 24px rgba(245, 184, 0, 0.18);
+  --yellow: #ffe9a3;
+  --yellow-soft: #fff9e6;
+  --yellow-deep: #ffd966;
+  --orange: #ffc07a;
+  --cream: #fffdf8;
+  --ink: #8a7a55;
+  --ink-soft: #b3a584;
+  --shadow: 0 8px 24px rgba(255, 210, 120, 0.22);
   /* iOS 安全区 */
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -21,7 +21,7 @@ html { -webkit-text-size-adjust: 100%; }
 
 body {
   font-family: "PingFang SC", "Microsoft YaHei", "Comic Sans MS", "Baloo 2", sans-serif;
-  background: linear-gradient(135deg, #fff8e1 0%, #fff3c4 100%);
+  background: linear-gradient(135deg, #fffdf5 0%, #fff7e0 100%);
   color: var(--ink);
   min-height: 100vh;
   min-height: 100dvh;
@@ -38,6 +38,8 @@ body {
   width: 240px;
   flex-shrink: 0;
   background: linear-gradient(180deg, var(--yellow) 0%, var(--orange) 100%);
+  /* 侧栏叠加一层浅白，让整体更柔和 */
+  box-shadow: 4px 0 18px rgba(255, 210, 120, 0.25);
   padding: 24px 16px;
   display: flex;
   flex-direction: column;
