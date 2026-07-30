@@ -96,6 +96,48 @@ function showPage(id) {
 document.querySelectorAll('.nav-item').forEach(b => b.addEventListener('click', () => showPage(b.dataset.page)));
 document.querySelectorAll('[data-jump]').forEach(c => c.addEventListener('click', () => showPage(c.dataset.jump)));
 
+/* ---------- 通用分页（卡片分组翻页） ---------- */
+let swipeLock = false;
+function pageSizeOf(p) { const w = window.innerWidth; if (w <= 600) return p.sm; if (w <= 1024) return p.md; return p.lg; }
+function createPaginator(o) {
+  const grid = document.getElementById(o.gridId);
+  const pager = document.getElementById(o.pagerId);
+  const info = document.getElementById(o.infoId);
+  const prev = pager.querySelector('[data-dir="-1"]');
+  const next = pager.querySelector('[data-dir="1"]');
+  let page = 0;
+  function totalPages() { const items = o.getItems(); const size = o.pageSize(o); return Math.max(1, Math.ceil(items.length / size)); }
+  function render() {
+    const items = o.getItems();
+    const size = o.pageSize(o);
+    const total = Math.max(1, Math.ceil(items.length / size));
+    if (page >= total) page = total - 1;
+    if (page < 0) page = 0;
+    grid.innerHTML = '';
+    const start = page * size;
+    items.slice(start, start + size).forEach(it => { const node = o.renderItem(it); if (node) grid.appendChild(node); });
+    if (info) info.textContent = `第 ${page + 1} / ${total} 页`;
+    if (prev) prev.disabled = page === 0;
+    if (next) next.disabled = page >= total - 1;
+    if (pager) pager.style.display = total > 1 ? 'flex' : 'none';
+  }
+  if (prev) prev.onclick = () => { if (page > 0) { page--; render(); beep(); } };
+  if (next) next.onclick = () => { if (page < totalPages() - 1) { page++; render(); beep(); } };
+  // 移动端左右滑动翻页
+  let sx = 0, sy = 0;
+  grid.addEventListener('touchstart', e => { if (e.touches.length) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; } }, { passive: true });
+  grid.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+      swipeLock = true; setTimeout(() => swipeLock = false, 350);
+      if (dx < 0 && page < totalPages() - 1) { page++; render(); beep(); }
+      else if (dx > 0 && page > 0) { page--; render(); beep(); }
+    }
+  }, { passive: true });
+  window.addEventListener('resize', render);
+  return { render, reset: () => { page = 0; render(); } };
+}
+
 /* ---------- 识字 ---------- */
 const shiziData = {
   '动物': [['🐱', '猫', 'māo'], ['🐶', '狗', 'gǒu'], ['🐰', '兔', 'tù'], ['🐯', '虎', 'hǔ'], ['🐘', '象', 'xiàng'], ['🐼', '熊猫', 'xióng māo'], ['🐟', '鱼', 'yú'], ['🐤', '鸟', 'niǎo']],
@@ -111,21 +153,23 @@ function renderShiziTabs() {
     const b = document.createElement('button');
     b.className = 'tab' + (cat === curCat ? ' on' : '');
     b.textContent = cat;
-    b.onclick = () => { curCat = cat; renderShiziTabs(); renderShiziGrid(); beep(); };
+    b.onclick = () => { curCat = cat; renderShiziTabs(); shiziPager.reset(); beep(); };
     wrap.appendChild(b);
   });
 }
-function renderShiziGrid() {
-  const wrap = document.getElementById('shiziGrid');
-  wrap.innerHTML = '';
-  shiziData[curCat].forEach(([emoji, word, py]) => {
+const shiziPager = createPaginator({
+  gridId: 'shiziGrid', pagerId: 'shiziPager', infoId: 'shiziPagerInfo',
+  pageSize: () => pageSizeOf({ sm: 9, md: 12, lg: 18 }),
+  getItems: () => shiziData[curCat] || [],
+  renderItem: ([emoji, word, py]) => {
     const d = document.createElement('div');
     d.className = 'flash';
     d.innerHTML = `<div class="emoji">${emoji}</div><div class="big">${word}</div><div class="py">${py}</div>`;
-    d.onclick = () => { speak(word); beep(); d.style.transform = 'scale(1.1)'; setTimeout(() => d.style.transform = '', 150); };
-    wrap.appendChild(d);
-  });
-}
+    d.onclick = () => { if (swipeLock) return; speak(word); beep(); d.style.transform = 'scale(1.1)'; setTimeout(() => d.style.transform = '', 150); };
+    return d;
+  }
+});
+function renderShiziGrid() { shiziPager.render(); }
 document.getElementById('shiziReadAll').onclick = () => speakQueue(shiziData[curCat].map(x => x[1]));
 
 /* ---------- 字卡乐园（数据来自 shizileyuan，见 shizi-blocks.js） ---------- */
@@ -151,26 +195,24 @@ function renderBlocksSetTabs() {
     const b = document.createElement('button');
     b.className = 'tab sub' + (s.id === blocksSet ? ' on' : '');
     b.textContent = s.name;
-    b.onclick = () => { blocksSet = s.id; renderBlocksSetTabs(); renderBlocksGrid(); beep(); };
+    b.onclick = () => { blocksSet = s.id; renderBlocksSetTabs(); blocksPager.reset(); beep(); };
     wrap.appendChild(b);
   });
 }
-function renderBlocksGrid() {
-  const wrap = document.getElementById('blocksGrid');
-  if (!wrap) return;
-  wrap.innerHTML = '';
-  const set = curBlocksSet();
-  if (!set) return;
-  set.chars.forEach(c => {
+const blocksPager = createPaginator({
+  gridId: 'blocksGrid', pagerId: 'blocksPager', infoId: 'blocksPagerInfo',
+  pageSize: () => pageSizeOf({ sm: 12, md: 16, lg: 24 }),
+  getItems: () => curBlocksSet() ? curBlocksSet().chars : [],
+  renderItem: c => {
     const d = document.createElement('div');
     d.className = 'flash';
     d.innerHTML = `<div class="big">${c.char}</div><div class="py">${c.py}</div>`;
-    d.onclick = () => { speak(c.char); beep(); openBlockModal(c); };
-    wrap.appendChild(d);
-  });
-  const rd = document.getElementById('blocksReadAll');
-  if (rd) rd.onclick = () => speakQueue(set.chars.map(c => c.char));
-}
+    d.onclick = () => { if (swipeLock) return; speak(c.char); beep(); openBlockModal(c); };
+    return d;
+  }
+});
+function renderBlocksGrid() { blocksPager.render(); }
+document.getElementById('blocksReadAll').onclick = () => { const s = curBlocksSet(); if (s) speakQueue(s.chars.map(c => c.char)); };
 function openBlockModal(c) {
   const mask = document.getElementById('blocksModal');
   if (!mask) return;
@@ -207,7 +249,7 @@ function renderEnCats() {
     const b = document.createElement('button');
     b.className = 'tab' + (c.id === enCat ? ' on' : '');
     b.textContent = c.icon + ' ' + c.name;
-    b.onclick = () => { enCat = c.id; enLesson = ''; renderEnCats(); renderEnLessons(); beep(); };
+    b.onclick = () => { enCat = c.id; enLesson = ''; renderEnCats(); renderEnLessons(); enPager.reset(); beep(); };
     wrap.appendChild(b);
   });
 }
@@ -220,30 +262,24 @@ function renderEnLessons() {
     const b = document.createElement('button');
     b.className = 'tab sub' + (l.id === (enCurLesson() && enCurLesson().id) ? ' on' : '');
     b.textContent = l.icon + ' ' + l.name;
-    b.onclick = () => { enLesson = l.id; renderEnLessons(); renderEnWords(); beep(); };
+    b.onclick = () => { enLesson = l.id; renderEnLessons(); enPager.reset(); beep(); };
     wrap.appendChild(b);
   });
 }
-function renderEnWords() {
-  const wrap = document.getElementById('englishGrid');
-  if (!wrap) return;
-  const lesson = enCurLesson();
-  wrap.innerHTML = '';
-  if (!lesson) return;
-  lesson.words.forEach(w => {
+const enPager = createPaginator({
+  gridId: 'englishGrid', pagerId: 'enPager', infoId: 'enPagerInfo',
+  pageSize: () => pageSizeOf({ sm: 9, md: 12, lg: 18 }),
+  getItems: () => { const l = enCurLesson(); return l ? l.words : []; },
+  renderItem: w => {
     const d = document.createElement('div');
     d.className = 'flash';
     d.innerHTML = `<div class="big">${w.en}</div><div class="py">${w.cn}</div><div class="en-spk">🔊</div>`;
-    d.onclick = () => {
-      speak(w.en, 'en-US'); beep();
-      d.style.transform = 'scale(1.08)';
-      setTimeout(() => d.style.transform = '', 150);
-    };
-    wrap.appendChild(d);
-  });
-  const rd = document.getElementById('enReadAll');
-  if (rd) rd.onclick = () => speakQueue(lesson.words.map(w => w.en), 'en-US');
-}
+    d.onclick = () => { if (swipeLock) return; speak(w.en, 'en-US'); beep(); d.style.transform = 'scale(1.08)'; setTimeout(() => d.style.transform = '', 150); };
+    return d;
+  }
+});
+function renderEnWords() { enPager.render(); }
+document.getElementById('enReadAll').onclick = () => { const l = enCurLesson(); if (l) speakQueue(l.words.map(w => w.en), 'en-US'); };
 
 /* ---------- 数学：数一数 ---------- */
 let curCount = 3;

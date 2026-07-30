@@ -159,6 +159,17 @@ body {
 .en-spk { font-size: calc(15px * var(--ts)); opacity: .7; margin-top: 4px; }
 .en-actions { text-align: center; }
 
+/* 卡片分页（分组翻页） */
+.pager { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 18px 0 4px; }
+.pager-btn {
+  background: var(--green-deep); color: #fff; border: none; cursor: pointer;
+  font-weight: 800; font-size: calc(15px * var(--ts)); padding: 10px 20px;
+  border-radius: 22px; min-height: 44px; box-shadow: var(--shadow); transition: transform .12s ease;
+}
+.pager-btn:active { transform: scale(0.95); }
+.pager-btn:disabled { background: #d6e8dd; color: #aac3b4; cursor: not-allowed; box-shadow: none; }
+.pager-info { font-weight: 800; color: var(--ink); font-size: calc(15px * var(--ts)); min-width: 96px; text-align: center; }
+
 /* 字卡乐园弹窗 */
 .modal-mask {
   position: fixed; inset: 0; background: rgba(40, 60, 50, .45);
@@ -375,6 +386,19 @@ body {
   .poem { padding: 18px 20px; }
   .poem p { font-size: calc(15px * var(--ts)); }
   .paint-canvas { height: 340px; }
+  .section-title { margin-bottom: 4px; }
+  .section-desc { margin-bottom: 14px; }
+  .tabs { gap: 8px; margin-bottom: 14px; }
+  .flash-grid { gap: 10px; }
+  /* 手机端分页器吸底，便于短屏翻页 */
+  .pager {
+    position: sticky; bottom: calc(10px + var(--safe-bottom));
+    background: rgba(255,253,248,0.94); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    border-radius: 24px; padding: 8px 14px; box-shadow: var(--shadow);
+    width: fit-content; margin: 16px auto 4px; z-index: 5;
+  }
+  .pager-btn { padding: 9px 16px; font-size: calc(14px * var(--ts)); }
+  .pager-info { min-width: 80px; font-size: calc(14px * var(--ts)); }
 }
 
 /* 横屏手机（矮高度） */
@@ -383,6 +407,10 @@ body {
   .brand-logo { font-size: 24px; }
   .hero { padding: 16px 22px; }
   .hero-emoji { font-size: 40px; }
+  .flash { min-height: 60px; padding: 10px 6px; }
+  .flash .big { font-size: calc(24px * var(--ts)); }
+  .flash-grid { gap: 8px; }
+  .pager { margin: 10px 0 2px; }
 }
 
 /* 支持“添加到主屏幕”后的 standalone 模式（去除多余边距） */

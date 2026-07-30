@@ -12,7 +12,7 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="恋恋学习岛" />
-  <link rel="stylesheet" href="style.css?v=20260730b" />
+  <link rel="stylesheet" href="style.css?v=20260730c" />
 </head>
 <body>
   <div class="app">
@@ -86,11 +86,21 @@
           <div class="tabs" id="shiziTabs"></div>
           <div class="flash-grid" id="shiziGrid"></div>
           <div class="en-actions"><button class="btn-soft" id="shiziReadAll">🔊 全部读一遍</button></div>
+          <div class="pager" id="shiziPager" style="display:none">
+            <button class="pager-btn" data-dir="-1">‹ 上一页</button>
+            <span class="pager-info" id="shiziPagerInfo"></span>
+            <button class="pager-btn" data-dir="1">下一页 ›</button>
+          </div>
         </div>
         <div id="blocksArea" style="display:none">
           <div class="tabs" id="blocksSetTabs"></div>
           <div class="flash-grid" id="blocksGrid"></div>
           <div class="en-actions"><button class="btn-soft" id="blocksReadAll">🔊 全部读一遍</button></div>
+          <div class="pager" id="blocksPager" style="display:none">
+            <button class="pager-btn" data-dir="-1">‹ 上一页</button>
+            <span class="pager-info" id="blocksPagerInfo"></span>
+            <button class="pager-btn" data-dir="1">下一页 ›</button>
+          </div>
         </div>
         <!-- 字卡详情弹窗 -->
         <div class="modal-mask" id="blocksModal" style="display:none">
@@ -112,6 +122,11 @@
         <div class="tabs sub" id="enLessons"></div>
         <div class="flash-grid" id="englishGrid"></div>
         <div class="en-actions"><button class="btn-soft" id="enReadAll">🔊 全部读一遍</button></div>
+        <div class="pager" id="enPager" style="display:none">
+          <button class="pager-btn" data-dir="-1">‹ 上一页</button>
+          <span class="pager-info" id="enPagerInfo"></span>
+          <button class="pager-btn" data-dir="1">下一页 ›</button>
+        </div>
       </section>
 
       <!-- 数学 -->
@@ -263,6 +278,6 @@
   <script src="poems-data.js?v=20260729e"></script>
   <script src="english-data.js?v=20260730a"></script>
   <script src="shizi-blocks.js?v=20260730b"></script>
-  <script src="script.js?v=20260730b"></script>
+  <script src="script.js?v=20260730c"></script>
 </body>
 </html>
