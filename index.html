@@ -12,7 +12,7 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="恋恋学习岛" />
-  <link rel="stylesheet" href="style.css?v=20260730c" />
+  <link rel="stylesheet" href="style.css?v=20260730d" />
 </head>
 <body>
   <div class="app">
@@ -132,17 +132,35 @@
       <!-- 数学 -->
       <section class="page" id="page-math">
         <h2 class="section-title">➕ 数学城堡</h2>
-        <p class="section-desc">先数一数，再做做小题目，越算越聪明！</p>
-        <div class="quiz-box">
+        <p class="section-desc">先数一数，再闯关做算术，还有好玩的百数板！</p>
+        <div class="tabs" id="mathTabs"></div>
+
+        <!-- 数一数 -->
+        <div class="quiz-box" id="mathCountArea">
           <h3 style="color:var(--mint);margin-bottom:12px;">🍎 数一数</h3>
           <div class="count-show" id="countShow"></div>
           <div class="count-opts" id="countOpts"></div>
           <div class="quiz-feedback" id="countFeedback"></div>
         </div>
-        <div class="quiz-box" style="margin-top:18px;">
-          <div class="quiz-q" id="mathQ">3 + 2 = ?</div>
+
+        <!-- 算术闯关 -->
+        <div class="quiz-box" id="mathPlayArea" style="display:none">
+          <div class="math-visual" id="mathVisual"></div>
+          <div class="quiz-q" id="mathQ">? + ? = ?</div>
           <div class="quiz-options" id="mathOptions"></div>
           <div class="quiz-feedback" id="mathFeedback"></div>
+          <div class="en-actions"><button class="btn-soft" id="mathReadQ">🔊 读题目</button></div>
+        </div>
+
+        <!-- 百数板 -->
+        <div id="mathBoardArea" style="display:none">
+          <div class="board-ctrl" id="boardCtrl">
+            <button class="tab on" data-bm="explore">🔢 点读</button>
+            <button class="tab" data-bm="skip">🔁 跳数</button>
+            <button class="tab" data-bm="blank">❓ 填空</button>
+          </div>
+          <div class="board-grid" id="boardGrid"></div>
+          <div class="quiz-feedback" id="boardFeedback"></div>
         </div>
       </section>
 
@@ -278,6 +296,7 @@
   <script src="poems-data.js?v=20260729e"></script>
   <script src="english-data.js?v=20260730a"></script>
   <script src="shizi-blocks.js?v=20260730b"></script>
-  <script src="script.js?v=20260730c"></script>
+  <script src="math-data.js?v=20260730d"></script>
+  <script src="script.js?v=20260730d"></script>
 </body>
 </html>

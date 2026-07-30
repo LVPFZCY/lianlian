@@ -225,6 +225,30 @@ body {
 .count-opts { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
 .count-opts .opt { min-width: 64px; }
 
+/* 算术闯关可视化 */
+.math-visual { min-height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px; padding: 14px; background: var(--green-soft); border-radius: 18px; }
+.visual-row { font-size: calc(34px * var(--ts)); line-height: 1.25; letter-spacing: 2px; }
+.visual-op { font-size: calc(30px * var(--ts)); color: var(--green-deep); font-weight: 900; }
+.visual-cap { font-size: calc(14px * var(--ts)); color: var(--ink); font-weight: 700; text-align: center; }
+.ten-frame { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; background: #fff; padding: 12px; border-radius: 14px; box-shadow: var(--shadow); }
+.frame-cell { aspect-ratio: 1; border-radius: 10px; background: #eef6f0; border: 2px dashed #cfe6d6; }
+.frame-cell.filled { background: var(--mint); border: 2px solid var(--green-deep); }
+.rods { display: flex; align-items: center; gap: 12px; font-size: calc(26px * var(--ts)); flex-wrap: wrap; justify-content: center; }
+.rod-b { filter: drop-shadow(0 2px 0 rgba(0,0,0,.08)); }
+.rod-s { letter-spacing: 2px; }
+
+/* 百数板 */
+.board-ctrl { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 16px; }
+.board-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; max-width: 460px; margin: 0 auto; }
+.board-cell {
+  aspect-ratio: 1; border: none; border-radius: 10px; background: var(--green-soft);
+  font-size: calc(15px * var(--ts)); font-weight: 800; color: var(--ink); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: transform .12s ease, background .12s ease;
+}
+.board-cell:active { transform: scale(0.9); }
+.board-cell.skip-on { background: #ffe6a3; color: #b9791b; }
+.board-cell.blank-on { background: var(--mint); color: var(--green-deep); }
+
 /* 古诗 */
 .poem-list { display: flex; flex-direction: column; gap: 16px; }
 .poem {
@@ -399,6 +423,12 @@ body {
   }
   .pager-btn { padding: 9px 16px; font-size: calc(14px * var(--ts)); }
   .pager-info { min-width: 80px; font-size: calc(14px * var(--ts)); }
+  .board-grid { gap: 4px; max-width: 100%; }
+  .board-cell { border-radius: 8px; font-size: calc(13px * var(--ts)); }
+  .math-visual { min-height: 96px; padding: 10px; }
+  .visual-row { font-size: calc(28px * var(--ts)); }
+  .ten-frame { gap: 5px; padding: 9px; }
+  .quiz-box { padding: 18px; }
 }
 
 /* 横屏手机（矮高度） */

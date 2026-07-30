@@ -304,25 +304,157 @@ function renderCount() {
 }
 function addStar(n) { stars += n; save('ll_stars', stars); renderStars(); }
 
-/* ---------- 数学：加法 ---------- */
-function renderMath() {
-  const a = 1 + Math.floor(Math.random() * 9), b = 1 + Math.floor(Math.random() * 9);
-  const ans = a + b;
-  document.getElementById('mathQ').textContent = `${a} + ${b} = ?`;
-  const opts = [ans, ans + 1, ans - 1, ans + 2].filter(x => x >= 0).sort(() => Math.random() - 0.5);
+/* ---------- 数学城堡（数据见 math-data.js，题库来自 math-kids） ---------- */
+let mathMode = 'count';
+let mathLevel = 'l1';
+let mathLocked = false;
+
+function renderMathTabs() {
+  const wrap = document.getElementById('mathTabs');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  const tabs = [{ id: 'count', name: '🍎 数一数' }]
+    .concat(MATH_LEVELS.map(l => ({ id: l.id, name: `${l.icon} ${l.name}` })))
+    .concat([{ id: 'board', name: '🔢 百数板' }]);
+  tabs.forEach(t => {
+    const b = document.createElement('button');
+    b.className = 'tab' + (t.id === mathMode ? ' on' : '');
+    b.textContent = t.name;
+    b.onclick = () => { mathMode = t.id; renderMathTabs(); showMathMode(); beep(); };
+    wrap.appendChild(b);
+  });
+}
+function showMathMode() {
+  document.getElementById('mathCountArea').style.display = mathMode === 'count' ? '' : 'none';
+  document.getElementById('mathPlayArea').style.display = (mathMode === 'l1' || mathMode === 'l2' || mathMode === 'l3') ? '' : 'none';
+  document.getElementById('mathBoardArea').style.display = mathMode === 'board' ? '' : 'none';
+  if (mathMode === 'count') renderCount();
+  else if (mathMode === 'board') renderBoard();
+  else { mathLevel = mathMode; renderMathPlay(); }
+}
+
+/* 算术闯关：三关递进（水果 / 凑十 / 捆棒） */
+function renderMathVisual(q) {
+  const v = document.getElementById('mathVisual');
+  if (q.level === 'l1') {
+    const f = q.fruit;
+    if (q.type === 'add') {
+      v.innerHTML = `<div class="visual-row">${f.repeat(q.a)}</div><div class="visual-op">＋</div><div class="visual-row">${f.repeat(q.b)}</div>`;
+    } else {
+      v.innerHTML = `<div class="visual-row">${f.repeat(q.total)}</div><div class="visual-cap">原来有 ${q.total} 个，拿走 ${q.sub} 个</div>`;
+    }
+  } else if (q.level === 'l2') {
+    const cells = Array.from({ length: 10 }, (_, i) => `<div class="frame-cell${i < q.a ? ' filled' : ''}"></div>`).join('');
+    v.innerHTML = `<div class="ten-frame">${cells}</div><div class="visual-cap">先凑成 10，再加剩下的 ${q.b}</div>`;
+  } else {
+    const bundles = '📦'.repeat(q.tens);
+    const singles = '🟢'.repeat(q.ones);
+    v.innerHTML = `<div class="rods"><span class="rod-b">${bundles}</span><span class="rod-s">${singles}</span></div>` +
+      `<div class="visual-cap">十位 ${q.tens}（每捆10） · 个位 ${q.ones} → 共 ${q.total}，减 ${q.sub}</div>`;
+  }
+}
+function renderMathPlay() {
+  mathLocked = false;
+  const q = makeMathQuestion(mathLevel);
+  renderMathVisual(q);
+  document.getElementById('mathQ').textContent = q.type === 'add' ? `${q.a} + ${q.b} = ?` : `${q.total} - ${q.sub} = ?`;
+  const fb = document.getElementById('mathFeedback'); fb.textContent = '';
   const wrap = document.getElementById('mathOptions');
   wrap.innerHTML = '';
-  const fb = document.getElementById('mathFeedback'); fb.textContent = '';
+  mathOptions(q.answer).forEach(n => {
+    const b = document.createElement('button');
+    b.className = 'opt'; b.textContent = n;
+    b.onclick = () => {
+      if (mathLocked) return;
+      if (n === q.answer) {
+        mathLocked = true; b.classList.add('correct');
+        fb.textContent = '✅ 真聪明！'; speak('真聪明'); addStar(1);
+        setTimeout(renderMathPlay, 1300);
+      } else {
+        b.classList.add('wrong'); b.disabled = true;
+        fb.textContent = '再想想～'; speak('再想想');
+      }
+    };
+    wrap.appendChild(b);
+  });
+  const rd = document.getElementById('mathReadQ');
+  if (rd) rd.onclick = () => { const t = mathQuestionText(q); speak(t); };
+}
+/* 数一数（保留原逻辑） */
+function renderCount() {
+  curCount = 2 + Math.floor(Math.random() * 6);
+  document.getElementById('countShow').textContent = '🍎'.repeat(curCount);
+  const opts = [curCount, curCount + 1, Math.max(1, curCount - 1), curCount + 2].sort(() => Math.random() - 0.5);
+  const wrap = document.getElementById('countOpts');
+  wrap.innerHTML = '';
+  const fb = document.getElementById('countFeedback');
+  fb.textContent = '';
   opts.forEach(n => {
     const b = document.createElement('button');
     b.className = 'opt'; b.textContent = n;
     b.onclick = () => {
-      if (n === ans) { b.classList.add('correct'); fb.textContent = '✅ 真聪明！'; speak('真聪明'); addStar(1); }
-      else { b.classList.add('wrong'); fb.textContent = '再想想～'; speak('再想想'); }
-      setTimeout(renderMath, 1200);
+      if (n === curCount) { b.classList.add('correct'); fb.textContent = '✅ 答对啦，真棒！'; speak('答对啦，真棒'); addStar(1); }
+      else { b.classList.add('wrong'); fb.textContent = '再数一数哦～'; speak('再数一数'); }
+      setTimeout(renderCount, 1200);
     };
     wrap.appendChild(b);
   });
+}
+function addStar(n) { stars += n; save('ll_stars', stars); renderStars(); }
+
+/* 百数板（点读 / 跳数 / 填空） */
+let boardMode = 'explore';
+let boardBlank = new Set();
+function renderBoard() {
+  const grid = document.getElementById('boardGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  const fb = document.getElementById('boardFeedback'); if (fb) fb.textContent = '';
+  for (let n = 1; n <= 100; n++) {
+    const c = document.createElement('button');
+    c.className = 'board-cell';
+    const isBlank = boardMode === 'blank' && boardBlank.has(n);
+    c.textContent = isBlank ? '?' : n;
+    if (boardMode === 'skip' && n % boardSkip === 0) c.classList.add('skip-on');
+    c.onclick = () => {
+      if (boardMode === 'blank' && boardBlank.has(n)) {
+        boardBlank.delete(n); c.textContent = n; c.classList.remove('blank-on');
+        speak(String(n)); beep();
+      } else {
+        speak(String(n)); beep();
+        if (boardMode === 'blank') c.classList.add('blank-on');
+      }
+    };
+    grid.appendChild(c);
+  }
+}
+let boardSkip = 2;
+function renderBoardCtrl() {
+  const ctrl = document.getElementById('boardCtrl');
+  if (!ctrl) return;
+  ctrl.innerHTML = '';
+  const modes = [['explore', '🔢 点读'], ['skip', '🔁 跳数'], ['blank', '❓ 填空']];
+  modes.forEach(([m, label]) => {
+    const b = document.createElement('button');
+    b.className = 'tab' + (m === boardMode ? ' on' : '');
+    b.textContent = label;
+    b.onclick = () => {
+      boardMode = m;
+      if (m === 'blank') { boardBlank = new Set(); while (boardBlank.size < 12) boardBlank.add(1 + Math.floor(Math.random() * 100)); }
+      renderBoardCtrl(); renderBoard(); beep();
+    };
+    ctrl.appendChild(b);
+  });
+  if (boardMode === 'skip') {
+    const steps = [2, 5, 10];
+    steps.forEach(s => {
+      const b = document.createElement('button');
+      b.className = 'tab' + (s === boardSkip ? ' on' : '');
+      b.textContent = '×' + s;
+      b.onclick = () => { boardSkip = s; renderBoardCtrl(); renderBoard(); beep(); };
+      ctrl.appendChild(b);
+    });
+  }
 }
 
 /* ---------- 古诗（数据来自 chinese-poetry 唐诗三百首，见 poems-data.js） ---------- */
@@ -486,7 +618,7 @@ renderStars();
 renderShiziTabs(); renderShiziGrid();
 renderShiziModeTabs(); renderBlocksSetTabs(); renderBlocksGrid();
 renderEnCats(); renderEnLessons(); renderEnWords();
-renderCount(); renderMath();
+renderMathTabs(); renderBoardCtrl(); showMathMode();
 renderPoemTabs(); renderPoems();
 renderSongs();
 renderTasks();
