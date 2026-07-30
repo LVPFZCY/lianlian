@@ -191,11 +191,21 @@
       <section class="page" id="page-song">
         <h2 class="section-title">🎵 儿歌角</h2>
         <p class="section-desc">点一首儿歌，跟着唱一唱吧！</p>
+
+        <h3 class="sub-title">🌟 经典儿歌</h3>
         <div class="song-list" id="songList"></div>
+
+        <h3 class="sub-title">🐰 火火兔儿歌（幼儿园必学）</h3>
+        <div class="song-list" id="kinderSongList"></div>
+
         <div class="song-detail" id="songDetail" style="display:none;">
           <h3 id="songTitle"></h3>
           <p id="songLyrics"></p>
-          <button class="btn-primary" id="songPlay">🔊 读一读</button>
+          <div class="song-actions">
+            <button class="btn-primary" id="songPlay">🔊 读一读</button>
+            <button class="btn-primary" id="songAudio" style="display:none;">▶ 播放儿歌</button>
+          </div>
+          <audio id="songAudioEl" style="display:none;width:100%;margin-top:12px;" controls></audio>
         </div>
       </section>
 
@@ -297,6 +307,7 @@
   <script src="english-data.js?v=20260730a"></script>
   <script src="shizi-blocks.js?v=20260730b"></script>
   <script src="math-data.js?v=20260730e"></script>
+  <script src="songs-data.js?v=20260730e"></script>
   <script src="script.js?v=20260730e"></script>
 </body>
 </html>

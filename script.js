@@ -512,22 +512,53 @@ const songData = [
   { t: '数鸭子', e: '🦆', l: '门前大桥下，\n游过一群鸭，\n快来快来数一数，\n二四六七八。' },
   { t: '拔萝卜', e: '🥕', l: '拔萝卜，拔萝卜，\n嘿哟嘿哟拔萝卜，\n老婆婆，快快来，\n快来帮我们拔萝卜。' }
 ];
+function showSongDetail(title, lyrics, audioUrl) {
+  beep();
+  document.getElementById('songDetail').style.display = 'block';
+  document.getElementById('songTitle').textContent = title;
+  document.getElementById('songLyrics').textContent = lyrics;
+  const playBtn = document.getElementById('songPlay');
+  const audioBtn = document.getElementById('songAudio');
+  const audioEl = document.getElementById('songAudioEl');
+  audioEl.pause(); audioEl.removeAttribute('src'); audioEl.style.display = 'none';
+  if (audioUrl) {
+    audioBtn.style.display = '';
+    audioBtn.textContent = '▶ 播放儿歌';
+    audioBtn.onclick = () => {
+      if (audioEl.src !== audioUrl) { audioEl.src = audioUrl; audioEl.style.display = ''; }
+      audioEl.play().catch(() => speak('儿歌暂时无法播放'));
+      audioBtn.textContent = '⏸ 播放中…';
+      audioEl.onended = () => { audioBtn.textContent = '▶ 播放儿歌'; };
+    };
+  } else {
+    audioBtn.style.display = 'none';
+  }
+  if (autoReadSong) speak(title + '。' + lyrics.replace(/\n/g, '。'));
+  document.getElementById('songDetail').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
 function renderSongs() {
   const wrap = document.getElementById('songList');
-  wrap.innerHTML = '';
-  songData.forEach(s => {
-    const d = document.createElement('div');
-    d.className = 'song';
-    d.innerHTML = `<div class="song-emoji">${s.e}</div><h3>${s.t}</h3>`;
-    d.onclick = () => {
-      beep();
-      document.getElementById('songDetail').style.display = 'block';
-      document.getElementById('songTitle').textContent = s.t;
-      document.getElementById('songLyrics').textContent = s.l;
-      if (autoReadSong) speak(s.t + '。' + s.l.replace(/\n/g, '。'));
-    };
-    wrap.appendChild(d);
-  });
+  if (wrap) {
+    wrap.innerHTML = '';
+    songData.forEach(s => {
+      const d = document.createElement('div');
+      d.className = 'song';
+      d.innerHTML = `<div class="song-emoji">${s.e}</div><h3>${s.t}</h3>`;
+      d.onclick = () => showSongDetail(s.t, s.l, null);
+      wrap.appendChild(d);
+    });
+  }
+  const kwrap = document.getElementById('kinderSongList');
+  if (kwrap && typeof KINDER_SONGS !== 'undefined') {
+    kwrap.innerHTML = '';
+    KINDER_SONGS.forEach(s => {
+      const d = document.createElement('div');
+      d.className = 'song';
+      d.innerHTML = `<div class="song-emoji">${s.e || '🎵'}</div><h3>${s.t}</h3>`;
+      d.onclick = () => showSongDetail(s.t, s.l, s.url || null);
+      kwrap.appendChild(d);
+    });
+  }
 }
 document.getElementById('songPlay').onclick = () => {
   const t = document.getElementById('songTitle').textContent;

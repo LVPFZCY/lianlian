@@ -290,6 +290,9 @@ body {
 }
 .song-detail h3 { font-size: calc(22px * var(--ts)); color: var(--mint); margin-bottom: 12px; }
 .song-detail p { font-size: calc(17px * var(--ts)); line-height: 2; color: var(--ink); white-space: pre-line; }
+.sub-title { font-size: calc(19px * var(--ts)); color: var(--ink); margin: 22px 0 10px; }
+.song-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+.song-actions .btn-primary { flex: 1; min-width: 130px; }
 
 /* 设置 */
 .set-list { display: flex; flex-direction: column; gap: 14px; max-width: 560px; }
