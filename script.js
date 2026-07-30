@@ -128,18 +128,59 @@ function renderShiziGrid() {
 }
 document.getElementById('shiziReadAll').onclick = () => speakQueue(shiziData[curCat].map(x => x[1]));
 
-/* ---------- 英语 ---------- */
-const englishData = [['🍎', 'apple'], ['🐱', 'cat'], ['🐶', 'dog'], ['🌞', 'sun'], ['🌙', 'moon'], ['⭐', 'star'], ['🚗', 'car'], ['🐟', 'fish'], ['🍌', 'banana'], ['🐻', 'bear']];
-function renderEnglish() {
-  const wrap = document.getElementById('englishGrid');
+/* ---------- 英语（数据来自 pico-english，见 english-data.js） ---------- */
+let enCat = EN_CATS.length ? EN_CATS[0].id : '';
+let enLesson = '';
+function enCurCat() { return EN_CATS.find(c => c.id === enCat) || EN_CATS[0]; }
+function enCurLesson() {
+  const c = enCurCat();
+  if (!c) return null;
+  return c.lessons.find(l => l.id === enLesson) || c.lessons[0];
+}
+function renderEnCats() {
+  const wrap = document.getElementById('enCats');
+  if (!wrap) return;
   wrap.innerHTML = '';
-  englishData.forEach(([emoji, word]) => {
+  EN_CATS.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'tab' + (c.id === enCat ? ' on' : '');
+    b.textContent = c.icon + ' ' + c.name;
+    b.onclick = () => { enCat = c.id; enLesson = ''; renderEnCats(); renderEnLessons(); beep(); };
+    wrap.appendChild(b);
+  });
+}
+function renderEnLessons() {
+  const wrap = document.getElementById('enLessons');
+  if (!wrap) return;
+  const c = enCurCat();
+  wrap.innerHTML = '';
+  c.lessons.forEach(l => {
+    const b = document.createElement('button');
+    b.className = 'tab sub' + (l.id === (enCurLesson() && enCurLesson().id) ? ' on' : '');
+    b.textContent = l.icon + ' ' + l.name;
+    b.onclick = () => { enLesson = l.id; renderEnLessons(); renderEnWords(); beep(); };
+    wrap.appendChild(b);
+  });
+}
+function renderEnWords() {
+  const wrap = document.getElementById('englishGrid');
+  if (!wrap) return;
+  const lesson = enCurLesson();
+  wrap.innerHTML = '';
+  if (!lesson) return;
+  lesson.words.forEach(w => {
     const d = document.createElement('div');
     d.className = 'flash';
-    d.innerHTML = `<div class="emoji">${emoji}</div><div class="big">${word}</div>`;
-    d.onclick = () => { speak(word, 'en-US'); beep(); };
+    d.innerHTML = `<div class="big">${w.en}</div><div class="py">${w.cn}</div><div class="en-spk">🔊</div>`;
+    d.onclick = () => {
+      speak(w.en, 'en-US'); beep();
+      d.style.transform = 'scale(1.08)';
+      setTimeout(() => d.style.transform = '', 150);
+    };
     wrap.appendChild(d);
   });
+  const rd = document.getElementById('enReadAll');
+  if (rd) rd.onclick = () => speakQueue(lesson.words.map(w => w.en), 'en-US');
 }
 
 /* ---------- 数学：数一数 ---------- */
@@ -345,7 +386,7 @@ function renderTasks() {
 applySettings();
 renderStars();
 renderShiziTabs(); renderShiziGrid();
-renderEnglish();
+renderEnCats(); renderEnLessons(); renderEnWords();
 renderCount(); renderMath();
 renderPoemTabs(); renderPoems();
 renderSongs();

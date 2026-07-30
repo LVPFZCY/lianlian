@@ -152,6 +152,12 @@ body {
   font-size: calc(15px * var(--ts)); min-height: 40px;
 }
 .tab.on { background: var(--green-deep); color: #fff; border-color: var(--green-deep); }
+.tab.sub { padding: 6px 14px; font-size: calc(13px * var(--ts)); min-height: 34px; border-color: #d8f0e0; }
+.tab.sub.on { background: var(--mint); border-color: var(--mint); }
+
+/* 英语小屋 */
+.en-spk { font-size: calc(15px * var(--ts)); opacity: .7; margin-top: 4px; }
+.en-actions { text-align: center; }
 
 /* 闪卡 */
 .flash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 16px; }
