@@ -12,7 +12,7 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="恋恋学习岛" />
-  <link rel="stylesheet" href="style.css?v=20260730a" />
+  <link rel="stylesheet" href="style.css?v=20260730b" />
 </head>
 <body>
   <div class="app">
@@ -78,9 +78,30 @@
       <section class="page" id="page-shizi">
         <h2 class="section-title">🔤 识字乐园</h2>
         <p class="section-desc">点一点卡片，听听它怎么读～</p>
-        <div class="tabs" id="shiziTabs"></div>
-        <div class="flash-grid" id="shiziGrid"></div>
-        <button class="btn-soft" id="shiziReadAll">🔊 全部读一遍</button>
+        <div class="tabs" id="shiziModeTabs">
+          <button class="tab on" data-mode="basic">🧸 认物卡</button>
+          <button class="tab" data-mode="blocks">🧱 字卡乐园</button>
+        </div>
+        <div id="basicArea">
+          <div class="tabs" id="shiziTabs"></div>
+          <div class="flash-grid" id="shiziGrid"></div>
+          <div class="en-actions"><button class="btn-soft" id="shiziReadAll">🔊 全部读一遍</button></div>
+        </div>
+        <div id="blocksArea" style="display:none">
+          <div class="tabs" id="blocksSetTabs"></div>
+          <div class="flash-grid" id="blocksGrid"></div>
+          <div class="en-actions"><button class="btn-soft" id="blocksReadAll">🔊 全部读一遍</button></div>
+        </div>
+        <!-- 字卡详情弹窗 -->
+        <div class="modal-mask" id="blocksModal" style="display:none">
+          <div class="modal-box">
+            <button class="modal-close" id="blocksModalClose">✕</button>
+            <div class="modal-char" id="bmChar"></div>
+            <div class="modal-py" id="bmPy"></div>
+            <div class="modal-words" id="bmWords"></div>
+            <button class="btn-soft" id="bmSent">🔊 读一读句子</button>
+          </div>
+        </div>
       </section>
 
       <!-- 英语 -->
@@ -241,6 +262,7 @@
 
   <script src="poems-data.js?v=20260729e"></script>
   <script src="english-data.js?v=20260730a"></script>
-  <script src="script.js?v=20260730a"></script>
+  <script src="shizi-blocks.js?v=20260730b"></script>
+  <script src="script.js?v=20260730b"></script>
 </body>
 </html>

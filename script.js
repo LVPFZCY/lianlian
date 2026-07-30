@@ -128,6 +128,68 @@ function renderShiziGrid() {
 }
 document.getElementById('shiziReadAll').onclick = () => speakQueue(shiziData[curCat].map(x => x[1]));
 
+/* ---------- 字卡乐园（数据来自 shizileyuan，见 shizi-blocks.js） ---------- */
+let blocksSet = BLOCKS.length ? BLOCKS[0].id : '';
+let shiziMode = 'basic';
+function renderShiziModeTabs() {
+  document.querySelectorAll('#shiziModeTabs .tab').forEach(t => {
+    t.classList.toggle('on', t.dataset.mode === shiziMode);
+    t.onclick = () => {
+      shiziMode = t.dataset.mode;
+      document.getElementById('basicArea').style.display = shiziMode === 'basic' ? '' : 'none';
+      document.getElementById('blocksArea').style.display = shiziMode === 'blocks' ? '' : 'none';
+      renderShiziModeTabs(); beep();
+    };
+  });
+}
+function curBlocksSet() { return BLOCKS.find(s => s.id === blocksSet) || BLOCKS[0]; }
+function renderBlocksSetTabs() {
+  const wrap = document.getElementById('blocksSetTabs');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  BLOCKS.forEach(s => {
+    const b = document.createElement('button');
+    b.className = 'tab sub' + (s.id === blocksSet ? ' on' : '');
+    b.textContent = s.name;
+    b.onclick = () => { blocksSet = s.id; renderBlocksSetTabs(); renderBlocksGrid(); beep(); };
+    wrap.appendChild(b);
+  });
+}
+function renderBlocksGrid() {
+  const wrap = document.getElementById('blocksGrid');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  const set = curBlocksSet();
+  if (!set) return;
+  set.chars.forEach(c => {
+    const d = document.createElement('div');
+    d.className = 'flash';
+    d.innerHTML = `<div class="big">${c.char}</div><div class="py">${c.py}</div>`;
+    d.onclick = () => { speak(c.char); beep(); openBlockModal(c); };
+    wrap.appendChild(d);
+  });
+  const rd = document.getElementById('blocksReadAll');
+  if (rd) rd.onclick = () => speakQueue(set.chars.map(c => c.char));
+}
+function openBlockModal(c) {
+  const mask = document.getElementById('blocksModal');
+  if (!mask) return;
+  document.getElementById('bmChar').textContent = c.char;
+  document.getElementById('bmPy').textContent = c.py;
+  const ww = document.getElementById('bmWords');
+  ww.innerHTML = '';
+  c.words.forEach(w => {
+    const b = document.createElement('button');
+    b.className = 'word-chip';
+    b.innerHTML = `${w.w}${w.p ? `<span class="wp">${w.p}</span>` : ''}`;
+    b.onclick = () => speak(w.w);
+    ww.appendChild(b);
+  });
+  document.getElementById('bmSent').onclick = () => speak(c.sent);
+  mask.style.display = 'flex';
+}
+function closeBlockModal() { const m = document.getElementById('blocksModal'); if (m) m.style.display = 'none'; }
+
 /* ---------- 英语（数据来自 pico-english，见 english-data.js） ---------- */
 let enCat = EN_CATS.length ? EN_CATS[0].id : '';
 let enLesson = '';
@@ -386,8 +448,15 @@ function renderTasks() {
 applySettings();
 renderStars();
 renderShiziTabs(); renderShiziGrid();
+renderShiziModeTabs(); renderBlocksSetTabs(); renderBlocksGrid();
 renderEnCats(); renderEnLessons(); renderEnWords();
 renderCount(); renderMath();
 renderPoemTabs(); renderPoems();
 renderSongs();
 renderTasks();
+
+/* 字卡详情弹窗关闭 */
+const bmClose = document.getElementById('blocksModalClose');
+if (bmClose) bmClose.onclick = closeBlockModal;
+const bmMask = document.getElementById('blocksModal');
+if (bmMask) bmMask.onclick = e => { if (e.target === bmMask) closeBlockModal(); };
